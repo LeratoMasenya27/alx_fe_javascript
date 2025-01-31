@@ -1,7 +1,7 @@
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 let lastSelectedCategory = localStorage.getItem('lastSelectedCategory') || 'all';
 
-// Populate categories in the dropdown based on available quotes
+// Populate categories dynamically
 function populateCategories() {
     const categoryFilter = document.getElementById("categoryFilter");
     const categories = new Set();
@@ -10,7 +10,7 @@ function populateCategories() {
     quotes.forEach(quote => {
         categories.add(quote.category);
     });
-    
+
     // Populate the category dropdown dynamically
     categories.forEach(category => {
         const option = document.createElement("option");
