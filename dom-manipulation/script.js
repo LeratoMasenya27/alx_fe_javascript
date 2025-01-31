@@ -1,15 +1,10 @@
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 let lastSelectedCategory = localStorage.getItem('lastSelectedCategory') || 'all';
 
-// Populate categories dynamically
+// Populate categories dynamically using map
 function populateCategories() {
     const categoryFilter = document.getElementById("categoryFilter");
-    const categories = new Set();
-    
-    // Add categories from existing quotes
-    quotes.forEach(quote => {
-        categories.add(quote.category);
-    });
+    const categories = [...new Set(quotes.map(quote => quote.category))]; // Use map to extract categories and Set to get unique categories
 
     // Populate the category dropdown dynamically
     categories.forEach(category => {
