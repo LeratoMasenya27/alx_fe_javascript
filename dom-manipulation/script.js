@@ -1,12 +1,11 @@
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
 let lastSelectedCategory = localStorage.getItem('lastSelectedCategory') || 'all';
 
-// Simulate fetching quotes from a mock API (JSONPlaceholder for demonstration purposes)
+// Simulate fetching quotes from a mock API
 async function fetchQuotesFromServer() {
     try {
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts');  // Replace with an actual mock API for quotes
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts');  // Replace with actual mock API for quotes
         const data = await response.json();
-        // Simulate quotes data structure returned by the API
         return data.map(post => ({
             text: post.title, 
             category: 'general', 
@@ -14,7 +13,29 @@ async function fetchQuotesFromServer() {
         }));
     } catch (error) {
         console.error("Error fetching quotes from the server:", error);
-        return []; // Return empty array if there's an error
+        return [];
+    }
+}
+
+// Simulate posting quotes to the server
+async function postQuotesToServer(updatedQuotes) {
+    try {
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedQuotes)  // Send quotes as JSON
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to sync quotes to the server');
+        }
+
+        const data = await response.json();
+        console.log("Quotes successfully posted to server", data);
+    } catch (error) {
+        console.error("Error posting quotes to the server:", error);
     }
 }
 
@@ -38,6 +59,9 @@ async function syncDataWithServer() {
 
         localStorage.setItem('quotes', JSON.stringify(updatedQuotes));
         console.log("Data synced with server.");
+
+        // Post updated quotes to server
+        await postQuotesToServer(updatedQuotes);
 
         // Optionally, update the UI
         displayQuotes(updatedQuotes);
