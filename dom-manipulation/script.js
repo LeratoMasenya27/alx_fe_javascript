@@ -68,6 +68,9 @@ async function syncQuotes() {
 
         // Optionally, update the UI
         displayQuotes(updatedQuotes);
+
+        // Show alert after successful sync
+        alert("Quotes synced with server!");
     } catch (error) {
         console.error("Failed to sync quotes:", error);
     }
