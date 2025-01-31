@@ -40,11 +40,13 @@ async function postQuotesToServer(updatedQuotes) {
 }
 
 // Sync local data with server data
-async function syncDataWithServer() {
+async function syncQuotes() {
     try {
+        // Fetch quotes from server
         const serverQuotes = await fetchQuotesFromServer();
         const localQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
 
+        // Resolve conflicts and merge quotes
         const updatedQuotes = serverQuotes.map(serverQuote => {
             const localQuote = localQuotes.find(q => q.id === serverQuote.id);
             if (localQuote && localQuote.text !== serverQuote.text) {
@@ -57,16 +59,17 @@ async function syncDataWithServer() {
         const newQuotes = serverQuotes.filter(serverQuote => !localQuotes.some(q => q.id === serverQuote.id));
         updatedQuotes.push(...newQuotes);
 
+        // Update local storage with merged quotes
         localStorage.setItem('quotes', JSON.stringify(updatedQuotes));
         console.log("Data synced with server.");
 
-        // Post updated quotes to server
+        // Post updated quotes to the server
         await postQuotesToServer(updatedQuotes);
 
         // Optionally, update the UI
         displayQuotes(updatedQuotes);
     } catch (error) {
-        console.error("Failed to sync data with server:", error);
+        console.error("Failed to sync quotes:", error);
     }
 }
 
@@ -84,7 +87,7 @@ function showConflictNotification(quoteId) {
 
 // Manual sync button for users to trigger syncing with the server
 document.getElementById('manualSyncButton').addEventListener('click', () => {
-    syncDataWithServer();  // Trigger sync manually
+    syncQuotes();  // Trigger sync manually
 });
 
 // Populate categories dynamically
@@ -139,5 +142,5 @@ function displayQuotes(filteredQuotes) {
 document.addEventListener('DOMContentLoaded', () => {
     populateCategories();
     filterQuotes();
-    setInterval(syncDataWithServer, 5 * 60 * 1000);  // Sync every 5 minutes
+    setInterval(syncQuotes, 5 * 60 * 1000);  // Sync every 5 minutes
 });
